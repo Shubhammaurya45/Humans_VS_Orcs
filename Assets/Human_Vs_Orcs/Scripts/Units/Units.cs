@@ -1,5 +1,7 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public enum UnitState
 {
@@ -8,6 +10,7 @@ public enum UnitState
     Attacking,
     Chopping,
     Mining,
+    Dead,
 }
 
 public enum UnitTask
@@ -21,13 +24,20 @@ public enum UnitTask
 
 public abstract class Units : MonoBehaviour
 {
+    [Header("Layer_Mask")]
+    [SerializeField]
+    private LayerMask enemyLayerMask;
+
+    [SerializeField]
+    private LayerMask alliesLayerMask;
+
+    //-------------------------------------------------------
     [Header("Materials")]
     [SerializeField]
+    private Material outlineMaterail;
     private Material originalMaterial;
 
-    [SerializeField]
-    private Material outlineMaterail;
-
+    //============================================================
     [SerializeField]
     private ActionSO[] actions;
 
@@ -41,34 +51,51 @@ public abstract class Units : MonoBehaviour
     public UnitState CurrentState { get; protected set; }
     public UnitTask CurrentTask { get; protected set; }
 
-    // public Units Target { get; protected set; }
-
-    public bool isTargeted;
-
+    //========================================================================
     [Header("Object Detection Details")]
     [SerializeField]
     private float objectDetectionRadius;
 
-    [SerializeField]
-    private float objectAttackRange;
-    protected float objectDetectionInterval = 2f;
-    private float autoAttackFrequency = 1.5f;
-    protected float nextAutoAttack;
-
+    //=======================================================================
     [Header("Attack Details")]
+    protected CapsuleCollider2D targetCollider;
+
     [SerializeField]
     protected float autoAttackDamageDelay = 0.5f;
 
     [SerializeField]
     protected int autoAttackDamage = 7;
-    protected CapsuleCollider2D targetCollider;
 
-    protected void Awake()
+    [SerializeField]
+    private float objectAttackRange;
+
+    [SerializeField]
+    private int totalHealth = 100;
+
+    [SerializeField]
+    protected Color damageFlashColor = new Color(1f, 0.27f, 0.25f, 1f);
+
+    private readonly List<Collider2D> hitResults = new List<Collider2D>();
+    private ContactFilter2D contactFilter;
+
+    public bool isTargeted;
+    protected float objectDetectionInterval = 0.5f;
+    private float autoAttackFrequency = 1.5f;
+    protected float nextAutoAttack;
+    public float currentHealth;
+
+    public float CurrentHealth => currentHealth;
+
+    protected virtual void Start()
     {
         animator = GetComponentInChildren<Animator>();
         ai_Pawns = GetComponent<AI_Pawns>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         originalMaterial = spriteRenderer.material;
+        contactFilter = new ContactFilter2D();
+        contactFilter.SetLayerMask(enemyLayerMask);
+        contactFilter.useTriggers = false;
+        currentHealth = totalHealth;
     }
 
     void OnDrawGizmos()
@@ -81,54 +108,68 @@ public abstract class Units : MonoBehaviour
     }
 
     //------------------------ Detect Near Object -----------------------------
-    private Collider2D[] DetectNearbyObject(LayerMask layerMask)
+    private int DetectNearbyObject()
     {
-        return Physics2D.OverlapCircleAll(transform.position, objectDetectionRadius, layerMask);
+        return Physics2D.OverlapCircle(
+            transform.position,
+            objectDetectionRadius,
+            contactFilter,
+            hitResults
+        );
     }
 
-    public Transform GetClosestObject(Vector2 origin, LayerMask layerMask)
+    public Units GetClosestObject(Vector2 originPosition)
     {
-        Collider2D[] hits = DetectNearbyObject(layerMask);
-        Transform closet = null;
+        int totalHits = DetectNearbyObject();
+        Units closet = null;
         float minObjectDistance = Mathf.Infinity;
 
-        foreach (var hit in hits)
+        for (int i = 0; i < totalHits; i++)
         {
-            float objectDistance = Vector2.Distance(origin, hit.transform.position);
+            if (CurrentState == UnitState.Dead)
+                continue;
+
+            float objectDistance = Vector2.Distance(
+                originPosition,
+                hitResults[i].transform.position
+            );
             if (objectDistance < minObjectDistance)
             {
                 minObjectDistance = objectDistance;
-                closet = hit.transform;
+                closet = hitResults[i].GetComponent<Units>();
             }
         }
         return closet;
     }
 
     //------------------------ Attack ----------------------------------------
-    public Transform GetTarget(LayerMask layerMask)
+    public Units GetTarget()
     {
-        return GetClosestObject(transform.position, layerMask);
+        var currentTarget = GetClosestObject(transform.position);
+        targetCollider = currentTarget?.GetComponent<CapsuleCollider2D>();
+        return currentTarget;
     }
 
-    public bool IsTargetInRange(Transform target)
+    public bool IsTargetInRange(Vector3 targetPosition)
     {
-        return Vector3.Distance(target.transform.position, transform.position) <= objectAttackRange;
+        return Vector3.Distance(targetPosition, transform.position) <= objectAttackRange;
     }
 
-    public bool TryToAttackCurrentTarget()
+    public bool TryToAttackCurrentTarget(Units target)
     {
+        if (target.CurrentState == UnitState.Dead)
+            return false;
+
         if (Time.time >= nextAutoAttack)
         {
-            Debug.Log("Attack");
             nextAutoAttack = Time.time + autoAttackFrequency;
             return true;
         }
-        Debug.Log("Attack at CD");
         return false;
     }
 
     //------------------------------------ Damage -----------------------------
-    protected IEnumerator DelayDamage(float delay, int damage, Transform target)
+    protected IEnumerator DelayDamage(float delay, int damage, Units target)
     {
         yield return new WaitForSeconds(delay);
         if (target != null)
@@ -136,25 +177,30 @@ public abstract class Units : MonoBehaviour
             TakeDamage(damage, target);
         }
     }
-    
 
-    protected virtual void TakeDamage(int damage, Transform damager)
+    protected virtual void TakeDamage(int damage, Units target)
     {
-        targetCollider = damager.GetComponent<CapsuleCollider2D>();
-        UIManager.Instance.ShowTextPopup(damage.ToString(), GetTopPostion(damager), Color.red);
+        if (CurrentState == UnitState.Dead)
+            return;
+
+        target.currentHealth -= damage;
+        Debug.Log(target.currentHealth);
+
+        StartCoroutine(FlashEffect(target, 0.2f, 2, damageFlashColor));
     }
 
-    protected virtual void PerformAttackAnimation(Transform target)
+    protected IEnumerator FlashEffect(Units target, float duration, int flashCount, Color color)
     {
-        //
-    }
+        Color originalColor = target.spriteRenderer.color;
 
-    //------------------------------TextPopup---------------------------------
-    private Vector3 GetTopPostion(Transform target)
-    {
-        if (targetCollider == null)
-            return target.position;
-        return target.position + Vector3.up * targetCollider.size.y / 2;
+        for (int i = 0; i < flashCount; i++)
+        {
+            target.spriteRenderer.color = color;
+            yield return new WaitForSeconds(duration / 2f);
+
+            target.spriteRenderer.color = originalColor;
+            yield return new WaitForSeconds(duration / 2f);
+        }
     }
 
     //------------------- Movement -------------------------------------------
@@ -201,28 +247,26 @@ public abstract class Units : MonoBehaviour
 
     public void SetState(UnitState state)
     {
-        OnSetState(CurrentState, state);
+        ApplyState(CurrentState, state);
     }
 
-    public void SetTask(UnitTask task, Animator animator)
+    public void SetTask(UnitTask task)
     {
-        OnSetTask(CurrentTask, task);
-        SetAnimation(animator);
+        ApplyTask(CurrentTask, task);
+        SetAnimation();
     }
 
-    private void OnSetState(UnitState oldState, UnitState newState)
+    private void ApplyState(UnitState oldState, UnitState newState)
     {
         CurrentState = newState;
     }
 
-    private void OnSetTask(UnitTask oldTask, UnitTask newTask)
+    private void ApplyTask(UnitTask oldTask, UnitTask newTask)
     {
         CurrentTask = newTask;
-
-        Debug.Log(CurrentTask);
     }
 
-    public void SetAnimation(Animator animator)
+    public void SetAnimation()
     {
         switch (CurrentTask)
         {

@@ -79,6 +79,9 @@ public class GameManager : SingletonManager<GameManager>
     //select the new unit and deselect the active unit
     public void HandleClickOnUnit(Units unit)
     {
+        if (activeUnit != null && activeUnit.CurrentState == UnitState.Dead)
+            return;
+
         if (HasClickedOnActiveUnit(unit))
         {
             activeUnit.Deselect();

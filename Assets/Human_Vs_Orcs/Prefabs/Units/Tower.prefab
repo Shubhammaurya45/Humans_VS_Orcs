@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8420492815750441396}
   - component: {fileID: 1519755267201925769}
   - component: {fileID: 2857214803708610032}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Tower
   m_TagString: Tower
   m_Icon: {fileID: 0}
@@ -139,12 +139,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e503872037edfb9429339fd090391e8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  originalMaterial: {fileID: 2100000, guid: 85b698a46a9e85c4e89ce65214929ee1, type: 2}
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  alliesLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
   outlineMaterail: {fileID: 2100000, guid: 2bd8809ef60266847871216d4534937e, type: 2}
   actions: []
-  animator: {fileID: 0}
-  isTargeted: 0
   objectDetectionRadius: 0
+  isTargeted: 0
+  autoAttackDamageDelay: 0.5
+  autoAttackDamage: 7
+  objectAttackRange: 0
+  totalHealth: 100
   buildAction: {fileID: 11400000, guid: b758781ecc65ba341947a4e9f178979b, type: 2}
   timerText: {fileID: 6833477407588386809}
 --- !u!1001 &4463690857799681026

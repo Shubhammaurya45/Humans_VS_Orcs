@@ -1,4 +1,6 @@
+using System.Collections;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class Humanoid_Units : Units
 {
@@ -9,6 +11,9 @@ public class Humanoid_Units : Units
 
     protected virtual void Update()
     {
+        if (CurrentState == UnitState.Dead)
+            return;
+
         UpdateBehaviour();
         UpdateVelocity();
     }
@@ -34,10 +39,18 @@ public class Humanoid_Units : Units
         //
     }
 
-    protected override void PerformAttackAnimation(Transform target)
+    //------------------------------TextPopup---------------------------------
+    private Vector3 GetTopPosition(Vector3 targetPosition)
     {
-        base.PerformAttackAnimation(target);
-        Vector3 direction = (target.position - transform.position).normalized;
+        if (targetCollider == null)
+            return targetPosition;
+
+        return targetPosition + Vector3.up * targetCollider.size.y / 2;
+    }
+
+    protected void PerformAttackAnimation(Vector3 targetPosition)
+    {
+        Vector3 direction = (targetPosition - transform.position).normalized;
         if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
         {
             spriteRenderer.flipX = direction.x < 0;
@@ -47,5 +60,40 @@ public class Humanoid_Units : Units
         {
             Animator.SetTrigger(direction.y > 0 ? "AttackUP" : "AttackDown");
         }
+    }
+
+    protected override void TakeDamage(int damage, Units target)
+    {
+        base.TakeDamage(damage, target);
+        UIManager.Instance.ShowTextPopup(
+            damage.ToString(),
+            GetTopPosition(target.transform.position),
+            Color.red
+        );
+        if (target.currentHealth <= 0)
+        {
+            Die(target);
+        }
+    }
+
+    protected virtual void Die(Units target)
+    {
+        Debug.Log("Unit is Dead");
+        target.SetState(UnitState.Dead);
+        RunDeadEffect(target);
+        target = null;
+    }
+
+    protected void RunDeadEffect(Units target)
+    {
+        target.Animator.SetTrigger("Dead");
+        StartCoroutine(LateObjectDestroy(1.2f, target));
+    }
+
+    // Destroy gameobject after some time
+    private IEnumerator LateObjectDestroy(float delay, Units target)
+    {
+        yield return new WaitForSeconds(delay);
+        Destroy(target.gameObject);
     }
 }

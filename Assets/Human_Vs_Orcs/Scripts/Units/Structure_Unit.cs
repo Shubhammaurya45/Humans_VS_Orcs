@@ -3,7 +3,7 @@ public class Structure_Unit : Units
     private BuildingProcess buildingProcess;
     public bool IsUnderConstruction => buildingProcess != null;
 
-    private void Update()
+    protected virtual void Update()
     {
         if (IsUnderConstruction)
         {
