@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbd390d3ee8b7d54aa9a3dbda1bbf666, type: 3}
   m_Name: BuildAction2
   m_EditorClassIdentifier: 
-  buildingIcon: {fileID: -3146623167323606182, guid: 3b55b69863ee4eb49a6c2f35944a0ae6, type: 3}
-  buildingName: Castle
+  icon: {fileID: -3146623167323606182, guid: 3b55b69863ee4eb49a6c2f35944a0ae6, type: 3}
+  actionName: Castle
   Guid: f9e81235-c572-48fc-8430-dd98af30e317
+  workerUnitPrefab: {fileID: 2979715344468116789, guid: 3016a2ee80bb06949b1b3aaa92e657ba, type: 3}
   structurePrefab: {fileID: 4706673985098071723, guid: 8f7a947398d66d440b83fcb630be1348, type: 3}
   placementSprite: {fileID: -3146623167323606182, guid: 3b55b69863ee4eb49a6c2f35944a0ae6, type: 3}
   foundationSprite: {fileID: -7823033572186142668, guid: ccdbd084d740ec946b2728d7b36ea600, type: 3}
   completionSprite: {fileID: -3146623167323606182, guid: 3b55b69863ee4eb49a6c2f35944a0ae6, type: 3}
-  buildingDestroyed: {fileID: 0}
   buildingSize: {x: 6, y: 2}
   constructionTime: 5
   highlightTilemapOffset: {x: -3, y: -2, z: 0}

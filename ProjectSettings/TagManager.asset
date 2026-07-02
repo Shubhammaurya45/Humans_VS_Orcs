@@ -9,7 +9,6 @@ TagManager:
   - Timer
   - Tower
   - Castle
-  - Builder
   layers:
   - Default
   - TransparentFX

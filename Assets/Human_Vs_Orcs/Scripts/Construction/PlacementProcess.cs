@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class PlacementProcess
+public class PlacementProcess 
 {
     private BuildActionSO buildAction;
     private GameObject placementOutline;
@@ -10,31 +10,33 @@ public class PlacementProcess
     private Vector3Int[] highlightPosition;
     private Vector2Int buildingSize;
     private Vector3 pivotPosition;
-    private Vector3 lastOutlinePosition = Vector3.positiveInfinity;
+    private Vector3 lastOutlinePosition=Vector3.positiveInfinity;
     private static readonly Color validColor = new Color(0f, 1f, 0f, 0.4f);
-    private static readonly Color invalidColor = new Color(1f, 0f, 0f, 0.8f);
+    private static readonly Color invalidColor = new Color(1f, 0f, 0f, 0.8f); 
     private Tile validTile;
     private Tile invalidTile;
-
+   
     [Header("Getter")]
-    public BuildActionSO BuildAction => buildAction;
-    public int GoldCost => buildAction.GoldCost;
-    public int WoodCost => buildAction.WoodCost;
-
+    public BuildActionSO BuildAction=>buildAction;
+    public int GoldCost=>buildAction.GoldCost;
+    public int WoodCost=>buildAction.WoodCost;
+    
+    
     //Constructor
-    public PlacementProcess(BuildActionSO buildAction)
+    public PlacementProcess (BuildActionSO buildAction)
     {
-        this.buildAction = buildAction;
-        buildingSize = buildAction.BuildingSize;
+        this.buildAction=buildAction;
+        buildingSize=buildAction.BuildingSize;
         //Set array size
         highlightPosition = new Vector3Int[buildingSize.x * buildingSize.y];
 
-        overlayTilemap = TilemapManager.Instance.OverlayTilemap;
-        placeholderTileSprite = TilemapManager.Instance.PlaceholderTileSprite;
+        overlayTilemap=TilemapManager.Instance.OverlayTilemap;
+        placeholderTileSprite=TilemapManager.Instance.PlaceholderTileSprite;
         CreateTile();
-    }
 
-    public void Update()
+     
+    }
+    public  void Update()
     {
         if (placementOutline != null)
         {
@@ -45,13 +47,11 @@ public class PlacementProcess
 
     private void PlacementOutlinePosition()
     {
-        if (placementOutline == null)
-            return;
+        if(placementOutline==null) return;
+        
+        if(GameManager.Instance.IsPointerOverUIElement()) return;
 
-        if (GameManager.Instance.IsPointerOverUIElement())
-            return;
-
-        Vector3 worldPosition = GameManager.Instance.cameraController.leftMouseClickPosition;
+        Vector3 worldPosition=InputManager.Instance.inputHoldWorldPosition;
 
         if (worldPosition != Vector3.zero)
         {
@@ -62,45 +62,36 @@ public class PlacementProcess
     //Create a init gameobject of  construction
     public void CreatePlacementOutline()
     {
-        placementOutline = new GameObject("PlacementOutline");
-        var renderer = placementOutline.AddComponent<SpriteRenderer>();
-        renderer.sortingOrder = 999;
-        renderer.color = new Color(1, 1, 1, 0.5f);
-        renderer.sprite = buildAction.PlacementSprite;
+        placementOutline=new GameObject("PlacementOutline");
+        var renderer=placementOutline.AddComponent<SpriteRenderer>();
+        renderer.sortingOrder=999;
+        renderer.color=new Color(1,1,1,0.5f);
+        renderer.sprite=buildAction.PlacementSprite;
     }
 
-    //Place a gameobject excatly at grid
+    //Place a gameobject excatly at grid  
     private Vector3 SnapToGrid(Vector3 worldPosition)
     {
-        // Step back by half building size to find bottom-left tile
-        int baseX = Mathf.FloorToInt(worldPosition.x) - buildingSize.x / 2;
-        int baseY = Mathf.FloorToInt(worldPosition.y) - buildingSize.y / 2;
-
-        // Return center position so center-pivot sprites align correctly
-        return new Vector3(baseX + buildingSize.x * 0.5f, baseY + buildingSize.y * 0.5f, 0);
+        return new Vector3(Mathf.FloorToInt(worldPosition.x),Mathf.FloorToInt(worldPosition.y),0);
     }
 
     private void CreateTile()
     {
         validTile = ScriptableObject.CreateInstance<Tile>();
         validTile.sprite = placeholderTileSprite;
-        validTile.color = validColor;
+        validTile.color=validColor;
 
         invalidTile = ScriptableObject.CreateInstance<Tile>();
         invalidTile.sprite = placeholderTileSprite;
-        invalidTile.color = invalidColor;
+        invalidTile.color=invalidColor;
     }
 
-    public void HighlightTiles(Vector3 outlineCenter)
+    public void HighlightTiles(Vector3 outlinePosition)
     {
-        if (outlineCenter == lastOutlinePosition)
-            return;
+        if (outlinePosition == lastOutlinePosition) return; 
 
-        lastOutlinePosition = outlineCenter;
-        int startX = Mathf.FloorToInt(outlineCenter.x);
-        int startY = Mathf.FloorToInt(outlineCenter.y);
-        ;
-        pivotPosition = new Vector3(startX, startY, 0) + buildAction.HighlightTilemapOffset;
+        lastOutlinePosition = outlinePosition;
+        pivotPosition = outlinePosition + buildAction.HighlightTilemapOffset;
 
         ClearHighlight();
 
@@ -108,27 +99,23 @@ public class PlacementProcess
         {
             for (int y = 0; y < buildingSize.y; y++)
             {
-                var pos = new Vector3Int((int)pivotPosition.x + x, (int)pivotPosition.y + y, 0);
+                var pos=new Vector3Int((int)pivotPosition.x + x, (int)       pivotPosition.y + y, 0);
                 highlightPosition[x + y * buildingSize.x] = pos;
-                overlayTilemap.SetTile(pos, GetTile(pos));
+                overlayTilemap.SetTile(pos, GetTile(pos));  
             }
         }
     }
-
     private Tile GetTile(Vector3Int tilePostion)
     {
-        if (!TilemapManager.Instance.IsTileValid(tilePostion))
-            return invalidTile;
+        if(!TilemapManager.Instance.IsTileValid(tilePostion)) return invalidTile;
 
-        return validTile;
+        return validTile;  
     }
-
-    private bool IsPlacementAreaValid()
+      private bool IsPlacementAreaValid()
     {
-        foreach (var tilePosition in highlightPosition)
+         foreach (var tilePosition in highlightPosition)
         {
-            if (!TilemapManager.Instance.IsTileValid(tilePosition))
-                return false;
+            if (!TilemapManager.Instance.IsTileValid(tilePosition)) return false;
         }
 
         return true;
@@ -139,10 +126,10 @@ public class PlacementProcess
         if (IsPlacementAreaValid())
         {
             FinalizePlacement(out buildPosition);
-            return true;
+            return true; 
         }
         Debug.Log("Invalid Placement area");
-        buildPosition = Vector3.zero;
+        buildPosition=Vector3.zero;
         return false;
     }
 
@@ -151,14 +138,16 @@ public class PlacementProcess
         ClearHighlight();
         buildPosition = placementOutline.transform.position;
         Object.Destroy(placementOutline);
+        
     }
 
+   
     //Clear highlighted tiles
     private void ClearHighlight()
     {
-        foreach (var tilePosition in highlightPosition)
+        foreach(var tilePosition in highlightPosition)
         {
-            overlayTilemap.SetTile(tilePosition, null);
+            overlayTilemap.SetTile(tilePosition,null);
         }
     }
 
@@ -169,4 +158,17 @@ public class PlacementProcess
         Object.Destroy(validTile);
         Object.Destroy(invalidTile);
     }
+  
+    
+    
+
+    
+
+    
+
+
+
+
+
+
 }

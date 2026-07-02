@@ -84,8 +84,6 @@ ScriptedImporter:
     generateAnimationClips: 1
     addSortingGroup: 1
     addShadowCasters: 0
-    generateIndividualEvents: 1
-    generateSpriteAtlas: 1
   asepriteImporterSettings:
     fileImportMode: 1
     importHiddenLayers: 0
@@ -99,9 +97,9 @@ ScriptedImporter:
     generateAnimationClips: 1
     addSortingGroup: 1
     addShadowCasters: 0
-    generateIndividualEvents: 1
-    generateSpriteAtlas: 1
+  importFileNodeState: 1
   platformSettingsDirtyTick: 0
+  textureAssetName: 
   singleSpriteImportData:
   - name: 
     originalName: 
@@ -315,7 +313,6 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 72, y: 438}
   spriteSheetImportData: []
-  tileSetImportData: []
   asepriteLayers:
   - layerIndex: 0
     uuid:
@@ -411,10 +408,7 @@ ScriptedImporter:
         height: 25
       spriteId: 2cb20ce3719a87d4ebf73ad63446ea34
     linkedCells: []
-    tileCells: []
-    tileSetIndex: 0
     parentIndex: -1
-  tileSets: []
   platformSettings:
   - name: Default
     overridden: 0
@@ -430,5 +424,6 @@ ScriptedImporter:
     androidETC2FallbackOverride: 0
   generatePhysicsShape: 0
   secondarySpriteTextures: []
-  previousTextureSize: {x: 256, y: 512}
+  spritePackingTag: 
   canvasSize: {x: 192, y: 192}
+  previousTextureSize: {x: 256, y: 512}

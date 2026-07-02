@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbd390d3ee8b7d54aa9a3dbda1bbf666, type: 3}
   m_Name: BuildAction1
   m_EditorClassIdentifier: 
-  buildingIcon: {fileID: -4866884309602757033, guid: 9dd0dc343e9bbd84d848311503a68601, type: 3}
-  buildingName: Tower
+  icon: {fileID: -4866884309602757033, guid: 369f9ac965510604f98e652c1a63e0f3, type: 3}
+  actionName: Build Tower
   Guid: 3fa0a5d0-f1ea-4153-89c7-0a7e793c84f0
-  structurePrefab: {fileID: 6123417257799621048, guid: c9e9fcb36cc5d2d49a2a7b6cd570cdb5, type: 3}
+  workerUnitPrefab: {fileID: 2979715344468116789, guid: 3016a2ee80bb06949b1b3aaa92e657ba, type: 3}
+  structurePrefab: {fileID: 2857214803708610032, guid: c9e9fcb36cc5d2d49a2a7b6cd570cdb5, type: 3}
   placementSprite: {fileID: -4866884309602757033, guid: 369f9ac965510604f98e652c1a63e0f3, type: 3}
   foundationSprite: {fileID: -1164405640202335315, guid: 64a62aba158d8ab4584e154299909b51, type: 3}
   completionSprite: {fileID: -4866884309602757033, guid: 9dd0dc343e9bbd84d848311503a68601, type: 3}
-  buildingDestroyed: {fileID: 3370451049799072056, guid: 7f5b848321c061249a1359457090ed30, type: 3}
   buildingSize: {x: 2, y: 2}
   constructionTime: 5
   highlightTilemapOffset: {x: -1, y: -2, z: 0}

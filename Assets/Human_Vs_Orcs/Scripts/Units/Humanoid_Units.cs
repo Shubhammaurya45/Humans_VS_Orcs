@@ -1,24 +1,6 @@
 using System.Collections;
 using UnityEngine;
-
-public enum UnitState
-{
-    Idle,
-    Moving,
-    Attacking,
-    Chopping,
-    Mining,
-    Dead,
-}
-
-public enum UnitTask
-{
-    None,
-    Build,
-    Attack,
-    Chop,
-    Mine,
-}
+using static UnityEngine.GraphicsBuffer;
 
 public class Humanoid_Units : Units
 {
@@ -33,7 +15,7 @@ public class Humanoid_Units : Units
             return;
 
         UpdateBehaviour();
-        //UpdateVelocity();
+        UpdateVelocity();
     }
 
     private void UpdateVelocity()
@@ -66,15 +48,12 @@ public class Humanoid_Units : Units
         return targetPosition + Vector3.up * targetCollider.size.y / 2;
     }
 
-    //================================ AttackAnimation ==============================
-
-    protected virtual void PerformAttackAnimation(Units target)
+    protected void PerformAttackAnimation(Vector3 targetPosition)
     {
-        Vector3 direction = (target.transform.position - transform.position).normalized;
+        Vector3 direction = (targetPosition - transform.position).normalized;
         if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
         {
-            SpriteRenderer.flipX = direction.x < 0;
-            Debug.Log(Animator);
+            spriteRenderer.flipX = direction.x < 0;
             Animator.SetTrigger("AttackHorizontal");
         }
         else
@@ -83,29 +62,17 @@ public class Humanoid_Units : Units
         }
     }
 
-    public override void TakeDamage(int damage, Units target)
+    protected override void TakeDamage(int damage, Units target)
     {
         base.TakeDamage(damage, target);
-        var targetType = target.GetComponent<Humanoid_Units>();
-        if (targetType != null)
+        UIManager.Instance.ShowTextPopup(
+            damage.ToString(),
+            GetTopPosition(target.transform.position),
+            Color.red
+        );
+        if (target.currentHealth <= 0)
         {
-            UIManager.Instance.ShowTextPopup(
-                damage.ToString(),
-                GetTopPosition(target.transform.position),
-                Color.red
-            );
-            if (target.currentHealth <= 0)
-            {
-                Die(target);
-            }
-        }
-        else if (target.gameObject.layer == LayerMask.NameToLayer("Building"))
-        {
-            Debug.Log(target.gameObject.layer);
-            if (target.currentHealth <= 0)
-            {
-                DestroyBuilding(target);
-            }
+            Die(target);
         }
     }
 
@@ -115,14 +82,6 @@ public class Humanoid_Units : Units
         target.SetState(UnitState.Dead);
         RunDeadEffect(target);
         target = null;
-    }
-
-    private void DestroyBuilding(Units target)
-    {
-        var spriteRender = target.GetComponentInChildren<SpriteRenderer>();
-        Debug.Log(spriteRender);
-        target.HideHealthBar();
-        spriteRender.sprite = BuildManager.Instance.buildAction.BuildingDestroyed;
     }
 
     protected void RunDeadEffect(Units target)
@@ -135,9 +94,6 @@ public class Humanoid_Units : Units
     private IEnumerator LateObjectDestroy(float delay, Units target)
     {
         yield return new WaitForSeconds(delay);
-        if (target != null)
-        {
-            Destroy(target.gameObject);
-        }
+        Destroy(target.gameObject);
     }
 }
