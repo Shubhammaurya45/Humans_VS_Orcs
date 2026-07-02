@@ -11,8 +11,9 @@ public class Tower_Unit : Structure_Unit
     private TMP_Text timerText;
     private float constructionTime;
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
         constructionTime = buildAction.ConstructionTime;
         StartCoroutine(TimeRoutine());
     }

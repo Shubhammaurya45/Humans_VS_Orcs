@@ -1,18 +1,27 @@
-using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Pool;
 
-public class BuildManager : SingletonManager<BuildManager>
+public class BuildManager : SingletonManager<BuildManager>, IPointerClickHandler
 {
     private PlacementProcess placementProcess;
+    public BuildActionSO buildAction;
+
+    public ConstructionMenu constructionMenu;
 
     [SerializeField]
     private ConfirmationBar buildConfirmationBar;
 
     [SerializeField]
-    private Transform workerUnitParent;
+    private Worker_Unit workerUnitPrefab;
+
+    [SerializeField]
+    private Transform workerPoolParent;
 
     [SerializeField]
     private ParticleSystem constructionEffect;
+
+    private ObjectPool<Worker_Unit> workerPool;
 
     private int gold = 1000;
     private int wood = 1000;
@@ -20,12 +29,24 @@ public class BuildManager : SingletonManager<BuildManager>
     public int Gold => gold;
     public int Wood => wood;
 
+    protected override void Awake()
+    {
+        base.Awake();
+    }
+
     private void Update()
     {
         if (placementProcess != null)
         {
             placementProcess.Update();
         }
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        Debug.Log("Hi");
+        Debug.Log(eventData.pointerPressRaycast.worldPosition);
+        //placementOutlinePosition = eventData.position;
     }
 
     public bool IsPlacementProcessBegin()
@@ -39,27 +60,37 @@ public class BuildManager : SingletonManager<BuildManager>
     {
         if (placementProcess != null)
             return;
-        GameManager.Instance.cameraController.lockCamera = true;
+        this.buildAction = buildAction;
+        //constructionMenu.HideConstructionMenu();
+
+        //GameManager.Instance.cameraController.lockCamera = true;
         placementProcess = new PlacementProcess(buildAction);
+
         placementProcess.CreatePlacementOutline();
         buildConfirmationBar.ShowConfirmationBar(buildAction.GoldCost, buildAction.WoodCost);
         buildConfirmationBar.SetupHook(ConfirmBuildPlacement, CancelBuildPlacement);
     }
 
-    public Units SpwanWorkerUnit(Units workerUnit, Vector3 buildPostion)
+    public Worker_Unit SpawnWorkerUnit(Vector3 buildPostion)
     {
-        Vector3 workerUnitSpwanPostion = buildPostion + new Vector3(-1, 0, 0);
-        return Instantiate(
-            workerUnit,
-            workerUnitSpwanPostion,
-            quaternion.identity,
-            workerUnitParent
-        );
+        int xRandomOffset = UnityEngine.Random.Range(-1, 2);
+        int yRandomOffset = UnityEngine.Random.Range(0, 2);
+
+        Vector3 workerUnitPostionOffset = new Vector3(xRandomOffset, yRandomOffset, 0);
+        Vector3 workerUnitSpwanPostion = buildPostion + workerUnitPostionOffset;
+
+        var worker = workerPool.Get();
+        worker.transform.position = workerUnitSpwanPostion;
+        var workerSprite = worker.GetComponentInChildren<SpriteRenderer>();
+        if (xRandomOffset == 1)
+            workerSprite.flipX = true;
+
+        return worker;
     }
 
-    public void RemoveWorkerUnit(Units workerUnit)
+    public void RemoveWorkerUnit(Worker_Unit worker)
     {
-        Destroy(workerUnit.gameObject);
+        workerPool.Release(worker);
     }
 
     private void ConfirmBuildPlacement()
@@ -77,12 +108,7 @@ public class BuildManager : SingletonManager<BuildManager>
             ReduceResources(placementProcess.GoldCost, placementProcess.WoodCost);
             buildConfirmationBar.HideConfirmationBar();
 
-            new BuildingProcess(
-                placementProcess.BuildAction,
-                buildPosition,
-                (Worker_Unit)GameManager.Instance?.activeUnit,
-                constructionEffect
-            );
+            new BuildingProcess(placementProcess.BuildAction, buildPosition, constructionEffect);
             placementProcess = null;
             GameManager.Instance.cameraController.lockCamera = false;
         }

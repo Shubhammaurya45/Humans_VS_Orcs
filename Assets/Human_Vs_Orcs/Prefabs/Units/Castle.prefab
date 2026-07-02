@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 991389552872781297}
   - component: {fileID: 7928403333829756255}
   - component: {fileID: 4706673985098071723}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Castle
   m_TagString: Castle
   m_Icon: {fileID: 0}
@@ -78,7 +78,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 12
+  m_SortingOrder: 11
   m_Sprite: {fileID: -3146623167323606182, guid: 3b55b69863ee4eb49a6c2f35944a0ae6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -148,12 +148,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e503872037edfb9429339fd090391e8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  originalMaterial: {fileID: 2100000, guid: 85b698a46a9e85c4e89ce65214929ee1, type: 2}
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  alliesLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
   outlineMaterail: {fileID: 2100000, guid: 2bd8809ef60266847871216d4534937e, type: 2}
   actions: []
-  animator: {fileID: 0}
-  isTargeted: 0
   objectDetectionRadius: 0
+  isTargeted: 0
+  autoAttackDamageDelay: 0.5
+  autoAttackDamage: 7
+  objectAttackRange: 0
+  totalHealth: 100
+  currentHealth: 0
   buildAction: {fileID: 11400000, guid: c91f17188863be54a96cce44bd3b6a06, type: 2}
   timerText: {fileID: 4472911652848064}
 --- !u!1001 &7145154626396324411

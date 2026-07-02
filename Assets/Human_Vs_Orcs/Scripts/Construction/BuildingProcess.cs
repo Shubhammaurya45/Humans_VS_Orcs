@@ -3,68 +3,73 @@ using UnityEngine;
 public class BuildingProcess
 {
     private BuildActionSO buildAction;
-    private Units workerUnit;
+    private Worker_Unit workerUnit;
     private Animator workerUnitAnim;
     private float progresTime;
     private Structure_Unit structure;
-    private bool isFinished=false;
+    private bool isConstructionFinished = false;
     private ParticleSystem constructionEffect;
 
-    public BuildingProcess(BuildActionSO buildAction,Vector3 placementPosition,Worker_Unit worker,ParticleSystem constructionEffectPrefab)
+    public BuildingProcess(
+        BuildActionSO buildAction,
+        Vector3 placementPosition,
+        ParticleSystem constructionEffectPrefab
+    )
     {
         this.buildAction = buildAction;
-        constructionEffect=constructionEffectPrefab;
-        StartConstruction(buildAction, placementPosition, worker);
-        
-        // this.constructionEffect=constructionEffectPrefab;
+        StartConstruction(buildAction, placementPosition, constructionEffectPrefab);
     }
-
-    
 
     public void Update()
     {
-        if(isFinished) return;
+        if (isConstructionFinished)
+            return;
 
-        progresTime+=Time.deltaTime;
+        progresTime += Time.deltaTime;
 
-        if (IsConstructionFinished) FinishConstruction();
+        if (IsConstructionFinished)
+            FinishConstruction();
     }
 
-    private bool IsConstructionFinished=>progresTime>=buildAction.ConstructionTime;
+    private bool IsConstructionFinished => progresTime >= buildAction.ConstructionTime;
 
-    private void StartConstruction(BuildActionSO buildAction, Vector3 placementPosition, Worker_Unit worker)
+    private void StartConstruction(
+        BuildActionSO buildAction,
+        Vector3 placementPosition,
+        ParticleSystem constructionEffectPrefab
+    )
     {
         structure = Object.Instantiate(buildAction.StructurePrefab);
-        structure.SpriteRenderer.sprite = buildAction.FoundationSprite;
+        var spriteRenderer = structure.GetComponentInChildren<SpriteRenderer>();
+        spriteRenderer.sprite = buildAction.FoundationSprite;
         structure.transform.position = placementPosition;
         structure.RegisterProcess(this);
-        workerUnit = BuildManager.Instance.SpwanWorkerUnit(buildAction.WorkerUnitPrefab, placementPosition);
+        workerUnit = BuildManager.Instance.SpawnWorkerUnit(placementPosition);
         workerUnitAnim = workerUnit.GetComponentInChildren<Animator>();
-        worker.SetTask(UnitTask.Build, workerUnitAnim);
+        workerUnit.SetTask(UnitTask.Build);
+        workerUnit.SetAnimation(workerUnitAnim);
 
-        constructionEffect=Object.Instantiate(constructionEffect,placementPosition,Quaternion.identity,structure.transform);
+        constructionEffect = Object.Instantiate(
+            constructionEffectPrefab,
+            placementPosition,
+            Quaternion.identity,
+            structure.transform
+        );
         constructionEffect.Play();
-        
-        
     }
 
-    public void  FinishConstruction()
+    public void FinishConstruction()
     {
-        isFinished=true;
-        structure.SpriteRenderer.sprite=buildAction.CompletionSprite;
+        if (isConstructionFinished)
+            return;
+        isConstructionFinished = true;
+        structure.SetSelectable(isConstructionFinished);
+        structure.SpriteRenderer.sprite = buildAction.CompletionSprite;
         constructionEffect.Stop();
-        workerUnit.SetTask(UnitTask.None,workerUnitAnim);
+        workerUnit.SetTask(UnitTask.None);
+        workerUnit.SetAnimation(workerUnitAnim);
         BuildManager.Instance.RemoveWorkerUnit(workerUnit);
+        structure.ShowHealthBar();
         structure.OnConstructionFinished();
-        Object.Destroy(constructionEffect.gameObject);
-        
-    } 
-
-    
-
-
-
-
-
-    
+    }
 }

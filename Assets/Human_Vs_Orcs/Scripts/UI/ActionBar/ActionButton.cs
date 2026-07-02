@@ -1,15 +1,20 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class ActionButton : MonoBehaviour
 {
-    public Image iconImage;
+    public Image buildingIcon;
+    public TMP_Text buildingName;
+
     public Button button;
 
-    public void Init(Sprite icon,UnityAction action)
+    public void Init(Sprite icon, string buildingName, UnityAction action)
     {
-        iconImage.sprite=icon;
-        button.onClick.AddListener(action);
+        buildingIcon.sprite = icon;
+        this.buildingName.text = buildingName;
+
+        //button.onClick.AddListener(action);
     }
 }
