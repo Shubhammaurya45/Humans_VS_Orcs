@@ -11,18 +11,6 @@ public class Enemy_Unit : Humanoid_Units
     private float currentAttackCommitmentTime = 0;
     private Vector3 lastKnownTargetPos = new Vector3();
 
-    protected override void Update()
-    {
-        base.Update();
-        //    //timer += Time.deltaTime;
-        //    //if (timer > objectDetectionInterval)
-        //    //{
-        //    //    timer = 0;
-        //    //    target = GetTarget();
-        //    //    //SetTarget(target);
-        //    //}
-    }
-
     protected override void UpdateBehaviour()
     {
         base.UpdateBehaviour();
@@ -44,6 +32,7 @@ public class Enemy_Unit : Humanoid_Units
 
                 if (target != null)
                 {
+                    Debug.Log("MOving to target");
                     MoveTo(target.transform.position);
                     SetState(UnitState.Moving);
                 }
@@ -80,7 +69,7 @@ public class Enemy_Unit : Humanoid_Units
                         if (TryToAttackCurrentTarget(target))
                         {
                             currentAttackCommitmentTime = attackCommitmentTime;
-                            PerformAttackAnimation(target.transform.position);
+                            PerformAttackAnimation(target);
                             StartCoroutine(
                                 DelayDamage(autoAttackDamageDelay, autoAttackDamage, target)
                             );

@@ -1,26 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
-
-public enum UnitState
-{
-    Idle,
-    Moving,
-    Attacking,
-    Chopping,
-    Mining,
-    Dead,
-}
-
-public enum UnitTask
-{
-    None,
-    Build,
-    Attack,
-    Chop,
-    Mine,
-}
+using UnityEngine.UI;
 
 public abstract class Units : MonoBehaviour
 {
@@ -84,14 +65,24 @@ public abstract class Units : MonoBehaviour
     protected float nextAutoAttack;
     public float currentHealth;
 
+    public float TotalHealth => totalHealth;
     public float CurrentHealth => currentHealth;
+
+    [SerializeField]
+    private GameObject healthBar;
+
+    [SerializeField]
+    private Slider healthBarSilder;
 
     protected virtual void Start()
     {
         animator = GetComponentInChildren<Animator>();
+
         ai_Pawns = GetComponent<AI_Pawns>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
         originalMaterial = spriteRenderer.material;
+
         contactFilter = new ContactFilter2D();
         contactFilter.SetLayerMask(enemyLayerMask);
         contactFilter.useTriggers = false;
@@ -126,7 +117,8 @@ public abstract class Units : MonoBehaviour
 
         for (int i = 0; i < totalHits; i++)
         {
-            if (CurrentState == UnitState.Dead)
+            var unit = hitResults[i].GetComponent<Units>();
+            if (unit == null || unit.CurrentState == UnitState.Dead)
                 continue;
 
             float objectDistance = Vector2.Distance(
@@ -157,7 +149,7 @@ public abstract class Units : MonoBehaviour
 
     public bool TryToAttackCurrentTarget(Units target)
     {
-        if (target.CurrentState == UnitState.Dead)
+        if (target.currentHealth <= 0)
             return false;
 
         if (Time.time >= nextAutoAttack)
@@ -178,15 +170,20 @@ public abstract class Units : MonoBehaviour
         }
     }
 
-    protected virtual void TakeDamage(int damage, Units target)
+    public virtual void TakeDamage(int damage, Units target)
     {
-        if (CurrentState == UnitState.Dead)
+        if (target.currentHealth <= 0)
             return;
 
         target.currentHealth -= damage;
-        Debug.Log(target.currentHealth);
-
-        StartCoroutine(FlashEffect(target, 0.2f, 2, damageFlashColor));
+        if (target.gameObject.layer == LayerMask.NameToLayer("Building"))
+        {
+            ReduceHealthBarValue(target, damage);
+        }
+        if (target != null)
+        {
+            target.StartCoroutine(FlashEffect(target, 0.2f, 2, damageFlashColor));
+        }
     }
 
     protected IEnumerator FlashEffect(Units target, float duration, int flashCount, Color color)
@@ -201,6 +198,24 @@ public abstract class Units : MonoBehaviour
             target.spriteRenderer.color = originalColor;
             yield return new WaitForSeconds(duration / 2f);
         }
+    }
+
+    //===================== HealthBar ============================================
+    public void ShowHealthBar()
+    {
+        healthBar.SetActive(true);
+        healthBarSilder.maxValue = TotalHealth;
+        healthBarSilder.value = TotalHealth;
+    }
+
+    public void ReduceHealthBarValue(Units target, float damage)
+    {
+        target.healthBarSilder.value -= damage;
+    }
+
+    public void HideHealthBar()
+    {
+        healthBar.SetActive(false);
     }
 
     //------------------- Movement -------------------------------------------
@@ -253,7 +268,6 @@ public abstract class Units : MonoBehaviour
     public void SetTask(UnitTask task)
     {
         ApplyTask(CurrentTask, task);
-        SetAnimation();
     }
 
     private void ApplyState(UnitState oldState, UnitState newState)
@@ -264,23 +278,5 @@ public abstract class Units : MonoBehaviour
     private void ApplyTask(UnitTask oldTask, UnitTask newTask)
     {
         CurrentTask = newTask;
-    }
-
-    public void SetAnimation()
-    {
-        switch (CurrentTask)
-        {
-            case UnitTask.Build:
-                animator.SetBool("Build", true);
-                break;
-            case UnitTask.Chop:
-                animator.SetBool("Chop", true);
-                break;
-            default:
-                animator.SetBool("Idle", true);
-                animator.SetBool("Chop", false);
-                animator.SetBool("Build", false);
-                break;
-        }
     }
 }

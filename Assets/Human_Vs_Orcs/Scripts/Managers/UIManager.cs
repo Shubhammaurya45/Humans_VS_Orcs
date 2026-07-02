@@ -6,6 +6,7 @@ using UnityEngine;
 public class UIManager : SingletonManager<UIManager>
 {
     public ActionBar actionBar;
+
     public GameObject pointToClick;
 
     [SerializeField]

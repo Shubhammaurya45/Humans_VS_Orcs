@@ -1,13 +1,8 @@
-using TMPro;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "BuildAction", menuName = "Actions/BuildAction")]
 public class BuildActionSO : ActionSO
 {
-    [Header("Prefabs")]
-    [SerializeField]
-    private Units workerUnitPrefab;
-
     [SerializeField]
     private Structure_Unit structurePrefab;
 
@@ -41,7 +36,6 @@ public class BuildActionSO : ActionSO
     [SerializeField]
     private int woodCost;
 
-    public Units WorkerUnitPrefab => workerUnitPrefab;
     public Structure_Unit StructurePrefab => structurePrefab;
 
     public Sprite PlacementSprite => placementSprite;
