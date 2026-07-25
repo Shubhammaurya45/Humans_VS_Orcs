@@ -89,7 +89,7 @@ public class CameraController : MonoBehaviour
             // World position
             Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             worldPos.z = 0; // flatten z for 2D
-            UIManager.Instance?.DisplayPointToClick(worldPos);
+            //UIManager.Instance?.DisplayPointToClick(worldPos);
             leftMouseClickPosition = worldPos;
         }
     }

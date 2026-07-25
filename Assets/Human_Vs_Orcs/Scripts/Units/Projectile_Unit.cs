@@ -1,17 +1,5 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Pool;
-
-public enum ArcherAnimation
-{
-    Idle,
-    Run,
-    AttackUP_1,
-    AttackUp_2,
-    AttackHorizontal,
-    AttackDown_1,
-    AttackDown_2,
-}
 
 public class Projectile_Unit : Humanoid_Units
 {
@@ -38,20 +26,20 @@ public class Projectile_Unit : Humanoid_Units
 
     private void Awake()
     {
-        projectilePool = new ObjectPool<Projectile>(
-            createFunc: () => Instantiate(projectilePrefab, projectilePoolParent), // only when pool is empty
-            actionOnGet: unit => unit.gameObject.SetActive(true), // on borrow
-            actionOnRelease: unit => unit.gameObject.SetActive(false), // on return
-            actionOnDestroy: unit =>
-            {
-                if (unit != null)
-                {
-                    Destroy(unit.gameObject);
-                }
-            }, // if pool overflows
-            defaultCapacity: 3,
-            maxSize: 10
-        );
+        //projectilePool = new ObjectPool<Projectile>(
+        //    //createFunc: () => Instantiate(projectilePrefab, projectilePoolParent), // only when pool is empty
+        //    actionOnGet: unit => unit.gameObject.SetActive(true), // on borrow
+        //    actionOnRelease: unit => unit.gameObject.SetActive(false), // on return
+        //    actionOnDestroy: unit =>
+        //    {
+        //        if (unit != null)
+        //        {
+        //            Destroy(unit.gameObject);
+        //        }
+        //    }, // if pool overflows
+        //    defaultCapacity: 3,
+        //    maxSize: 10
+        //);
     }
 
     protected override void Update()
@@ -81,7 +69,6 @@ public class Projectile_Unit : Humanoid_Units
             {
                 SetState(UnitState.Attacking);
                 StartAttack();
-                //GetProjectile();
                 attackTimer = 0;
             }
         }
@@ -90,7 +77,7 @@ public class Projectile_Unit : Humanoid_Units
     //Initialize from animation trigger
     public void GetProjectile()
     {
-        projectile = projectilePool.Get();
+        //projectile = projectilePool.Get();
         projectile.transform.position = this.transform.position;
         projectile.Initialize(target, this);
     }
