@@ -33,7 +33,7 @@ public class Humanoid_Units : Units
             return;
 
         UpdateBehaviour();
-        //UpdateVelocity();
+        UpdateVelocity();
     }
 
     private void UpdateVelocity()

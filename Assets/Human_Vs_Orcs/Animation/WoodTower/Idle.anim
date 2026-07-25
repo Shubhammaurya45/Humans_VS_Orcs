@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: RangeUnitAttackHorizontal
+  m_Name: Idle
   serializedVersion: 8
   m_Legacy: 0
   m_Compressed: 0
@@ -21,11 +21,13 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: -251161555349555468, guid: b9f6804d5b82aac41a1baa71d8182aab, type: 3}
+      value: {fileID: 1355195777722144874, guid: dbeee9d7c3e5d134aad970a539f63b2a, type: 3}
     - time: 0.1
-      value: {fileID: -1931856458177630270, guid: b9f6804d5b82aac41a1baa71d8182aab, type: 3}
+      value: {fileID: 8449136028634530401, guid: dbeee9d7c3e5d134aad970a539f63b2a, type: 3}
     - time: 0.2
-      value: {fileID: 6797021380799551527, guid: b9f6804d5b82aac41a1baa71d8182aab, type: 3}
+      value: {fileID: -4340742807042858613, guid: dbeee9d7c3e5d134aad970a539f63b2a, type: 3}
+    - time: 0.3
+      value: {fileID: -3945947257045179373, guid: dbeee9d7c3e5d134aad970a539f63b2a, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -49,15 +51,16 @@ AnimationClip:
       isSerializeReferenceCurve: 0
       metaData: 0
     pptrCurveMapping:
-    - {fileID: -251161555349555468, guid: b9f6804d5b82aac41a1baa71d8182aab, type: 3}
-    - {fileID: -1931856458177630270, guid: b9f6804d5b82aac41a1baa71d8182aab, type: 3}
-    - {fileID: 6797021380799551527, guid: b9f6804d5b82aac41a1baa71d8182aab, type: 3}
+    - {fileID: 1355195777722144874, guid: dbeee9d7c3e5d134aad970a539f63b2a, type: 3}
+    - {fileID: 8449136028634530401, guid: dbeee9d7c3e5d134aad970a539f63b2a, type: 3}
+    - {fileID: -4340742807042858613, guid: dbeee9d7c3e5d134aad970a539f63b2a, type: 3}
+    - {fileID: -3945947257045179373, guid: dbeee9d7c3e5d134aad970a539f63b2a, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.3
+    m_StopTime: 0.4
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -76,11 +79,4 @@ AnimationClip:
   m_EulerEditorCurves: []
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
-  m_Events:
-  - time: 0.2
-    functionName: SpawnProjectiile
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
+  m_Events: []

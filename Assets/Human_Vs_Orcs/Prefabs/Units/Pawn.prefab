@@ -117,6 +117,8 @@ MonoBehaviour:
   currentHealth: 0
   healthBar: {fileID: 0}
   healthBarSilder: {fileID: 0}
+  workerPrefab: {fileID: 5213973760285416913}
+  workerPoolParent: {fileID: 0}
 --- !u!1 &5324462891316693278
 GameObject:
   m_ObjectHideFlags: 0
@@ -152,6 +154,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7550403838260555511
 SpriteRenderer:
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -170,6 +173,8 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -191,10 +196,12 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 24
-  m_Sprite: {fileID: -6152626301178634141, guid: 462517bcfe0ee2143802c50ef7902ef6, type: 3}
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: -2526443156231494169, guid: 462517bcfe0ee2143802c50ef7902ef6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -203,8 +210,8 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
 --- !u!95 &6558576308404555760
 Animator:
   serializedVersion: 7

@@ -44,7 +44,7 @@ public class BuildingProcess
         spriteRenderer.sprite = buildAction.FoundationSprite;
         structure.transform.position = placementPosition;
         structure.RegisterProcess(this);
-        workerUnit = BuildManager.Instance.SpawnWorkerUnit(placementPosition);
+        //workerUnit = BuildManager.Instance.SpawnWorkerUnit(placementPosition);
         workerUnitAnim = workerUnit.GetComponentInChildren<Animator>();
         workerUnit.SetTask(UnitTask.Build);
         workerUnit.SetAnimation(workerUnitAnim);

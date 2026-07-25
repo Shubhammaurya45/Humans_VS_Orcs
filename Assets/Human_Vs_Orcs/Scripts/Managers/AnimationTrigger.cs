@@ -9,7 +9,7 @@ public class AnimationTrigger : MonoBehaviour
         projectile_Unit = FindAnyObjectByType<Projectile_Unit>();
     }
 
-    public void SpawnArrow()
+    public void SpawnProjectiile()
     {
         projectile_Unit.GetProjectile();
     }

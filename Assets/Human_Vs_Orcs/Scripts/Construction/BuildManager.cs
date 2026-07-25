@@ -71,22 +71,22 @@ public class BuildManager : SingletonManager<BuildManager>, IPointerClickHandler
         buildConfirmationBar.SetupHook(ConfirmBuildPlacement, CancelBuildPlacement);
     }
 
-    public Worker_Unit SpawnWorkerUnit(Vector3 buildPostion)
-    {
-        int xRandomOffset = UnityEngine.Random.Range(-1, 2);
-        int yRandomOffset = UnityEngine.Random.Range(0, 2);
+    //public Worker_Unit SpawnWorkerUnit(Vector3 buildPostion)
+    //{
+    //    int xRandomOffset = UnityEngine.Random.Range(-1, 2);
+    //    int yRandomOffset = UnityEngine.Random.Range(0, 2);
 
-        Vector3 workerUnitPostionOffset = new Vector3(xRandomOffset, yRandomOffset, 0);
-        Vector3 workerUnitSpwanPostion = buildPostion + workerUnitPostionOffset;
+    //    Vector3 workerUnitPostionOffset = new Vector3(xRandomOffset, yRandomOffset, 0);
+    //    Vector3 workerUnitSpwanPostion = buildPostion + workerUnitPostionOffset;
 
-        var worker = workerPool.Get();
-        worker.transform.position = workerUnitSpwanPostion;
-        var workerSprite = worker.GetComponentInChildren<SpriteRenderer>();
-        if (xRandomOffset == 1)
-            workerSprite.flipX = true;
+    //    ////var worker = workerPool.Get();
+    //    //worker.transform.position = workerUnitSpwanPostion;
+    //    //var workerSprite = worker.GetComponentInChildren<SpriteRenderer>();
+    //    //if (xRandomOffset == 1)
+    //    //    workerSprite.flipX = true;
 
-        return worker;
-    }
+    //    //return worker;
+    //}
 
     public void RemoveWorkerUnit(Worker_Unit worker)
     {

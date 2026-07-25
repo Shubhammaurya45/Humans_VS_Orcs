@@ -4,13 +4,13 @@ using UnityEngine.UI;
 
 public class Structure_Unit : Units, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
+    [SerializeField]
+    private Color highlightColor = new Color(1f, 1f, 0.75f, 1f);
+
     private BuildingProcess buildingProcess;
     public bool IsUnderConstruction => buildingProcess != null;
     private bool isConstructionComplete = false;
     private Color originalColor;
-
-    [SerializeField]
-    private Color highlightColor = new Color(1f, 1f, 0.75f, 1f);
 
     protected override void Start()
     {
