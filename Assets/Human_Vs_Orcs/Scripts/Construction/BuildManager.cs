@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Pool;
 
-public class BuildManager : SingletonManager<BuildManager>, IPointerClickHandler
+public class BuildManager : SingletonManager<BuildManager>
 {
     private PlacementProcess placementProcess;
     public BuildActionSO buildAction;
@@ -13,15 +13,12 @@ public class BuildManager : SingletonManager<BuildManager>, IPointerClickHandler
     private ConfirmationBar buildConfirmationBar;
 
     [SerializeField]
-    private Worker_Unit workerUnitPrefab;
+    private GameObject workerUnitPrefab;
 
-    [SerializeField]
-    private Transform workerPoolParent;
+    public GameObject WorkerPrefab => workerUnitPrefab;
 
     [SerializeField]
     private ParticleSystem constructionEffect;
-
-    private ObjectPool<Worker_Unit> workerPool;
 
     private int gold = 1000;
     private int wood = 1000;
@@ -40,13 +37,6 @@ public class BuildManager : SingletonManager<BuildManager>, IPointerClickHandler
         {
             placementProcess.Update();
         }
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        Debug.Log("Hi");
-        Debug.Log(eventData.pointerPressRaycast.worldPosition);
-        //placementOutlinePosition = eventData.position;
     }
 
     public bool IsPlacementProcessBegin()
@@ -69,28 +59,6 @@ public class BuildManager : SingletonManager<BuildManager>, IPointerClickHandler
         placementProcess.CreatePlacementOutline();
         buildConfirmationBar.ShowConfirmationBar(buildAction.GoldCost, buildAction.WoodCost);
         buildConfirmationBar.SetupHook(ConfirmBuildPlacement, CancelBuildPlacement);
-    }
-
-    //public Worker_Unit SpawnWorkerUnit(Vector3 buildPostion)
-    //{
-    //    int xRandomOffset = UnityEngine.Random.Range(-1, 2);
-    //    int yRandomOffset = UnityEngine.Random.Range(0, 2);
-
-    //    Vector3 workerUnitPostionOffset = new Vector3(xRandomOffset, yRandomOffset, 0);
-    //    Vector3 workerUnitSpwanPostion = buildPostion + workerUnitPostionOffset;
-
-    //    ////var worker = workerPool.Get();
-    //    //worker.transform.position = workerUnitSpwanPostion;
-    //    //var workerSprite = worker.GetComponentInChildren<SpriteRenderer>();
-    //    //if (xRandomOffset == 1)
-    //    //    workerSprite.flipX = true;
-
-    //    //return worker;
-    //}
-
-    public void RemoveWorkerUnit(Worker_Unit worker)
-    {
-        workerPool.Release(worker);
     }
 
     private void ConfirmBuildPlacement()

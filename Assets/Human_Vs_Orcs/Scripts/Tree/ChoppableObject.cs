@@ -11,6 +11,7 @@ public class ChoppableObject : MonoBehaviour
 
     [SerializeField]
     private Sprite treeChoppedIcon;
+    public static int totalWood;
 
     private SpriteRenderer chopObjectSpriteRender;
     private Animator anim;
@@ -40,6 +41,7 @@ public class ChoppableObject : MonoBehaviour
 
         if (anim)
             anim.enabled = false;
+        ResourceManager.Instance.Add(ResourceType.Wood, 3);
         chopObjectSpriteRender.sprite = treeChoppedIcon;
         TreeChopManager.Instance.worker.SetTask(UnitTask.None);
     }
