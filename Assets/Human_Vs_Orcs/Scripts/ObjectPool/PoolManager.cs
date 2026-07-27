@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.Rendering.STP;
 
 public class PoolManager : SingletonManager<PoolManager>
 {
@@ -45,33 +44,38 @@ public class PoolManager : SingletonManager<PoolManager>
     public bool TryGet<T>(GameObject prefab, Vector3 position, Quaternion rotation, out T component)
         where T : Component
     {
-        if (!pools.TryGetValue(prefab, out var pool))
-        {
-            component = null;
-            return false;
-        }
+        component = null;
 
+        if (!pools.TryGetValue(prefab, out var pool))
+            return false;
+
+        // 1) Check the resource FIRST, before touching the pool at all
+        bool hasResourceLink =
+            resourceLinks.TryGetValue(prefab, out var resType) && resType.HasValue;
+
+        if (hasResourceLink && !ResourceManager.Instance.Spend(resType.Value, 1))
+            return false; // not enough resource — pool is never touched
+
+        // 2) Now try to actually get an instance from the pool
         if (!pool.TryGet(position, rotation, out Transform instanceTransform))
         {
-            component = null;
+            // pool failed for some other reason — refund what we just spent
+            if (hasResourceLink)
+                ResourceManager.Instance.Add(resType.Value, 1);
             return false;
         }
 
-        // Try to get the requested component from the pooled Transform
+        // 3) Confirm the component we asked for actually exists on this prefab
         T comp = instanceTransform.GetComponent<T>();
         if (comp == null)
         {
-            // requested component not present on this prefab instance: return it to the pool
             pool.Release(instanceTransform);
-            component = null;
+            if (hasResourceLink)
+                ResourceManager.Instance.Add(resType.Value, 1);
             return false;
         }
 
         component = comp;
-
-        if (resourceLinks.TryGetValue(prefab, out var resType) && resType.HasValue)
-            ResourceManager.Instance.Spend(resType.Value, 1);
-
         return true;
     }
 

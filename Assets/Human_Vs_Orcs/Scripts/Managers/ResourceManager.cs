@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 
 public enum ResourceType
@@ -27,6 +29,7 @@ public class ResourceManager : SingletonManager<ResourceManager>
 
     // Subscribe to this from UI: (type, newValue)
     public event Action<ResourceType, int> OnResourceChanged;
+    public event Action<ResourceType> OnInsufficientResource;
 
     protected override void Awake()
     {
@@ -55,7 +58,10 @@ public class ResourceManager : SingletonManager<ResourceManager>
     public bool Spend(ResourceType type, int amount)
     {
         if (Get(type) < amount)
+        {
+            OnInsufficientResource?.Invoke(type);
             return false;
+        }
 
         resources[type] -= amount;
         OnResourceChanged?.Invoke(type, resources[type]);
