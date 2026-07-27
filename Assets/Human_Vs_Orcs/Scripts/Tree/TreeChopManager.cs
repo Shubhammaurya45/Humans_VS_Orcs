@@ -78,8 +78,6 @@ public class TreeChopManager : MonoBehaviour
         if (selectedTree == null)
             return;
 
-        //StopChopingIfActive();
-
         // lock in which tree we mean, right now
         ChoppableObject tree = selectedTree;
 
@@ -155,7 +153,9 @@ public class TreeChopManager : MonoBehaviour
 
     private void CloseChopUI()
     {
-        //StopChopingIfActive();
+        if (selectedTree == null)
+            return;
+
         selectedTree.ChopButtonUI.SetActive(false);
         selectedTree = null;
     }
