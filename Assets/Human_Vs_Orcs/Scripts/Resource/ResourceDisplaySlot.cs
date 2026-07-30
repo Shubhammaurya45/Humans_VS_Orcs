@@ -26,7 +26,7 @@ public class ResourceDisplaySlot : MonoBehaviour
     private Color originalColor = Color.white;
     private Coroutine flashRoutine;
 
-    private void OnEnable()
+    private void Start()
     {
         if (ResourceManager.Instance != null)
         {

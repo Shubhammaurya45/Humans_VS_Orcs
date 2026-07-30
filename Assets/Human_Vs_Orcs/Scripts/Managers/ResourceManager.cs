@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
+using TMPro;
 using UnityEngine;
 
 public enum ResourceType
@@ -25,11 +25,22 @@ public class ResourceManager : SingletonManager<ResourceManager>
     [SerializeField]
     private List<ResourceEntry> startingResources = new();
 
+    [SerializeField]
+    private GameObject popupPanel;
+
+    [SerializeField]
+    private TextMeshProUGUI messageText;
+
+    [SerializeField]
+    private float autoHideDelay = 2f;
+
     private Dictionary<ResourceType, int> resources = new Dictionary<ResourceType, int>();
 
     // Subscribe to this from UI: (type, newValue)
     public event Action<ResourceType, int> OnResourceChanged;
     public event Action<ResourceType> OnInsufficientResource;
+
+    private Coroutine hideRoutine;
 
     protected override void Awake()
     {
@@ -60,6 +71,8 @@ public class ResourceManager : SingletonManager<ResourceManager>
         if (Get(type) < amount)
         {
             OnInsufficientResource?.Invoke(type);
+            ShowWarningUI(type.ToString());
+
             return false;
         }
 
@@ -72,5 +85,21 @@ public class ResourceManager : SingletonManager<ResourceManager>
     {
         resources[type] = amount;
         OnResourceChanged?.Invoke(type, resources[type]);
+    }
+
+    public void ShowWarningUI(string resourceName)
+    {
+        messageText.text = $"Not enough {resourceName}!";
+        popupPanel.SetActive(true);
+
+        if (hideRoutine != null)
+            StopCoroutine(hideRoutine);
+        hideRoutine = StartCoroutine(AutoHide());
+    }
+
+    private IEnumerator AutoHide()
+    {
+        yield return new WaitForSeconds(autoHideDelay);
+        popupPanel.SetActive(false);
     }
 }
