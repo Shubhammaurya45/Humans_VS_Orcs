@@ -14,22 +14,22 @@ public class TreeChopManager : MonoBehaviour
     public static TreeChopManager Instance;
 
     [SerializeField]
-    private GameObject workerPrefab;
-    public Worker_Unit worker;
+    private GameObject workerPrefab; // Worker to spawn.
+    private Worker_Unit worker; // Last spawned worker.
 
-    private ChoppableObject selectedTree;
+    private ChoppableObject selectedTree; // Tree player picked.
 
     private Dictionary<ChoppableObject, ChopSession> activeSessions =
-        new Dictionary<ChoppableObject, ChopSession>();
+        new Dictionary<ChoppableObject, ChopSession>(); // Trees being chopped now.
 
-    private Coroutine chopCountdown;
-    private bool justOpenedThisFrame;
+    private bool justOpenedThisFrame; // Stops popup closing itself instantly.
 
     private void Awake()
     {
         Instance = this;
     }
 
+    // Close popup if player clicks elsewhere.
     private void LateUpdate()
     {
         if (justOpenedThisFrame)
@@ -54,6 +54,7 @@ public class TreeChopManager : MonoBehaviour
         CloseChopUI();
     }
 
+    // Check for a click or tap this frame.
     bool PressedThisFrame()
     {
         if (Input.touchCount > 0)
@@ -62,17 +63,18 @@ public class TreeChopManager : MonoBehaviour
         return Input.GetMouseButtonDown(0);
     }
 
+    // Player picked a tree: show its Chop popup.
     public void SelectTree(ChoppableObject tree)
     {
         if (selectedTree == tree && tree.ChopButtonUI.activeSelf)
             return;
 
-        //StopChopingIfActive();
         selectedTree = tree;
         selectedTree.ChopButtonUI.SetActive(true);
         justOpenedThisFrame = true;
     }
 
+    // Chop button pressed: get a worker, start the countdown.
     public void StartChoping()
     {
         if (selectedTree == null)
@@ -102,8 +104,6 @@ public class TreeChopManager : MonoBehaviour
             return;
         }
 
-        //selectedTree.ChopButton.gameObject.SetActive(false);
-
         Animator workeranim = worker.GetComponentInChildren<Animator>();
         worker.SetTask(UnitTask.Chop);
         worker.SetAnimation(workeranim);
@@ -118,6 +118,7 @@ public class TreeChopManager : MonoBehaviour
         CloseChopUI();
     }
 
+    // Wait chopTime seconds, then mark tree as chopped.
     private IEnumerator ChopCountdown(ChoppableObject tree, ChopSession session)
     {
         float timePassed = 0f;
@@ -128,12 +129,12 @@ public class TreeChopManager : MonoBehaviour
 
             yield return null;
         }
-        tree.OnChopped();
-        StopChopingIfActive();
+        tree.OnChopped(worker);
+        //CancelChop(tree);
         FinishSession(tree, session);
     }
 
-    // Cleans up after a tree is done being chopped (or cancelled)
+    // Chop done: return worker to pool, forget this tree.
     private void FinishSession(ChoppableObject tree, ChopSession session)
     {
         if (session.worker != null)
@@ -142,15 +143,18 @@ public class TreeChopManager : MonoBehaviour
         activeSessions.Remove(tree); // erase this tree's sticky note — it's done
     }
 
-    private void StopChopingIfActive()
-    {
-        if (chopCountdown != null)
-        {
-            StopCoroutine(chopCountdown);
-            chopCountdown = null;
-        }
-    }
+    // Stop chopping a tree early.
+    //private void CancelChop(ChoppableObject tree)
+    //{
+    //    if (activeSessions.TryGetValue(tree, out var session))
+    //    {
+    //        StopCoroutine(session.coroutine);
+    //        PoolManager.Instance.Release(workerPrefab, session.worker.gameObject);
+    //        activeSessions.Remove(tree);
+    //    }
+    //}
 
+    // Hide the Chop popup.
     private void CloseChopUI()
     {
         if (selectedTree == null)

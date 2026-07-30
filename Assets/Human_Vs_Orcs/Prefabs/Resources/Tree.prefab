@@ -562,7 +562,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Tree
   chopButtonUI: {fileID: 3947833109879459634}
   chopButton: {fileID: 8758226652424864164}
-  progressBar: {fileID: 0}
   treeChoppedIcon: {fileID: 3690649294209121615, guid: 82270768e10907846a1bea1d7cf62fe9, type: 3}
-  chopObjectSpriteRender: {fileID: 0}
   chopTime: 3
+  woodPerChop: 10
+  regrowTime: 3
+  spriteRenderer: {fileID: 1826592178991657269}
+  fullTreeSprite: {fileID: 6853316077166303748, guid: 82270768e10907846a1bea1d7cf62fe9, type: 3}
+  stumpSprite: {fileID: 0}
+  treeCollider: {fileID: 6085555951569928266}
